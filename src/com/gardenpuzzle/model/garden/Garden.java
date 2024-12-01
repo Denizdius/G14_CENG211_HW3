@@ -1,10 +1,8 @@
 package com.gardenpuzzle.model.garden;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.gardenpuzzle.model.objects.GardenObject;
 
 public class Garden {
-    private List<GardenSquare> squares;
     private int rows = 6;
     private int columns = 8;
     private GardenSquare[][] grid;
@@ -18,15 +16,63 @@ public class Garden {
         }
     }
 
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
     public GardenSquare getSquare(int row, int column) {
-        return grid[row][column];
+        if (row >= 0 && row < rows && column >= 0 && column < columns) {
+            return grid[row][column];
+        } else {
+            return null;
+        }
     }
 
     public void placeObject(int row, int column, GardenObject object) {
-        grid[row][column].setGardenObject(object);
+        if (row >= 0 && row < rows && column >= 0 && column < columns) {
+            grid[row][column].setGardenObject(object);
+        }
+    }
+
+    public boolean isBlocked(int row, int column) {
+        if (row >= 0 && row < rows && column >= 0 && column < columns) {
+            GardenSquare square = grid[row][column];
+            return square.getGardenObject() != null && !(square.getGardenObject().getClass().getSimpleName().equals("PollenCloud"));
+        }
+        return true;  // Out of bounds positions are considered blocked
     }
 
     public void displayGarden() {
-        // Display logic
+        // Display column headers
+        System.out.print("     ");
+        for (int col = 1; col <= columns; col++) {
+            System.out.printf("  %-3d ", col);
+        }
+        System.out.println();
+        System.out.print("   ");
+        System.out.println("------".repeat(columns));
+
+        // Display rows with content
+        for (int i = 0; i < rows; i++) {
+            char rowLabel = (char) ('A' + i);
+            System.out.print(" " + rowLabel + " |");
+            for (int j = 0; j < columns; j++) {
+                GardenSquare square = grid[i][j];
+                String content = "     ";
+                if (square.getGardenObject() != null) {
+                    content = " " + square.getGardenObject().getId() + " ";
+                } else if (square.getPollenCloud() != null) {
+                    content = "  P  ";
+                }
+                System.out.print(content + "|");
+            }
+            System.out.println();
+            System.out.print("   ");
+            System.out.println("------".repeat(columns));
+        }
     }
 }
