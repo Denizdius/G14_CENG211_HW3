@@ -1,18 +1,32 @@
-// FILE: com/gardenpuzzle/model/garden/PollenCloud.java
 package com.gardenpuzzle.model.garden;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import com.gardenpuzzle.model.objects.enums.Color;
+import com.gardenpuzzle.model.objects.enums.PlantType;
 
 public class PollenCloud {
-    private List<Color> colors;
+    private Set<Color> colors;
+    private Set<PlantType> plantTypes;
 
     public PollenCloud() {
-        colors = new ArrayList<>();
+        colors = new HashSet<>();
+        plantTypes = new HashSet<>();
     }
 
     public void addColor(Color color) {
         colors.add(color);
+    }
+
+    public void addPlantType(PlantType type) {
+        plantTypes.add(type);
+    }
+
+    public Set<Color> getColors() {
+        return colors;
+    }
+
+    public Set<PlantType> getPlantTypes() {
+        return plantTypes;
     }
 }

@@ -1,7 +1,6 @@
 package com.gardenpuzzle.model.garden;
 
 import com.gardenpuzzle.model.objects.GardenObject;
-import com.gardenpuzzle.model.garden.PollenCloud;
 
 public class GardenSquare {
     private GardenObject gardenObject;

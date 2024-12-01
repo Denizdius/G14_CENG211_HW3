@@ -19,12 +19,34 @@ public class LightSource extends GardenObject implements Lightable, Searchable {
 
     @Override
     public void lightUp() {
-        // Implement light up logic
+        // Light up logic
     }
 
     @Override
-    public boolean matches(String criteria) {
-        // Implement search logic
-        return false;
+    public boolean matches(String criteria, String value) {
+        switch (criteria) {
+            case "type":
+                return type.toString().equalsIgnoreCase(value);
+            case "id":
+                return id.equalsIgnoreCase(value);
+            case "color":
+                return color.toString().equalsIgnoreCase(value);
+            case "area":
+                return Integer.toString(areaOfLightReach).equals(value);
+            default:
+                return false;
+        }
+    }
+
+    public LightType getType() {
+        return type;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public int getAreaOfLightReach() {
+        return areaOfLightReach;
     }
 }

@@ -18,12 +18,34 @@ public class GardenPlant extends GardenObject implements Bloomable, Searchable {
 
     @Override
     public void bloom() {
-        // Implement bloom logic
+        // Bloom logic
     }
 
     @Override
-    public boolean matches(String criteria) {
-        // Implement search logic
-        return false;
+    public boolean matches(String criteria, String value) {
+        switch (criteria) {
+            case "type":
+                return type.toString().equalsIgnoreCase(value);
+            case "id":
+                return id.equalsIgnoreCase(value);
+            case "name":
+                return name.equalsIgnoreCase(value);
+            case "area":
+                return Integer.toString(areaOfPollenSpread).equals(value);
+            default:
+                return false;
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public PlantType getType() {
+        return type;
+    }
+
+    public int getAreaOfPollenSpread() {
+        return areaOfPollenSpread;
     }
 }
