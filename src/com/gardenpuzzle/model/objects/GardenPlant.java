@@ -14,6 +14,9 @@ public class GardenPlant extends GardenObject implements Bloomable, Searchable {
 
     public GardenPlant(String id, String name, PlantType type, int areaOfPollenSpread) {
         super(id);
+        if (name == null || type == null || areaOfPollenSpread < 0) {
+            throw new IllegalArgumentException("Invalid plant parameters");
+        }
         this.name = name;
         this.type = type;
         this.areaOfPollenSpread = areaOfPollenSpread;
@@ -33,6 +36,9 @@ public class GardenPlant extends GardenObject implements Bloomable, Searchable {
 
     @Override
     public void bloom(Garden garden, int row, int col) {
+        if (garden == null || !isValidPosition(row, col, garden.getRows(), garden.getColumns())) {
+            throw new IllegalArgumentException("Invalid bloom parameters");
+        }
         switch (type) {
             case FLOWER:
                 bloomDiagonally(garden, row, col);

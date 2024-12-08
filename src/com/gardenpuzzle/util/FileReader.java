@@ -18,19 +18,22 @@ public class FileReader {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] tokens = line.split(",");
-                String type = tokens[0];
-                if (type.equalsIgnoreCase("Plant")) {
-                    String id = tokens[1];
+                String type = tokens[0].toLowerCase();
+                String id = tokens[1];
+                
+                // Fix: Handle plant types (flower, tree, bush)
+                if (type.equals("flower") || type.equals("tree") || type.equals("bush")) {
                     String name = tokens[2];
-                    PlantType plantType = PlantType.valueOf(tokens[3].toUpperCase());
-                    int areaOfSpread = Integer.parseInt(tokens[4]);
+                    PlantType plantType = PlantType.valueOf(type.toUpperCase());
+                    int areaOfSpread = Integer.parseInt(tokens[3]);
                     GardenPlant plant = new GardenPlant(id, name, plantType, areaOfSpread);
                     gardenObjects.add(plant);
-                } else if (type.equalsIgnoreCase("Light")) {
-                    String id = tokens[1];
-                    LightType lightType = LightType.valueOf(tokens[2].toUpperCase().replace(" ", "_"));
-                    Color color = Color.valueOf(tokens[3].toUpperCase());
-                    int areaOfReach = Integer.parseInt(tokens[4]);
+                }
+                // Fix: Handle light types (small_lamp, large_lamp, spotlight)
+                else if (type.equals("small_lamp") || type.equals("large_lamp") || type.equals("spotlight")) {
+                    LightType lightType = LightType.valueOf(type.toUpperCase().replace("_", "_"));
+                    Color color = Color.valueOf(tokens[2].toUpperCase());
+                    int areaOfReach = Integer.parseInt(tokens[3]);
                     LightSource light = new LightSource(id, lightType, color, areaOfReach);
                     gardenObjects.add(light);
                 }

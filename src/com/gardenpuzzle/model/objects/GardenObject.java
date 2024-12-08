@@ -1,4 +1,6 @@
 package com.gardenpuzzle.model.objects;
+import java.io.*;
+import java.util.*;
 
 public abstract class GardenObject {
     public String id;

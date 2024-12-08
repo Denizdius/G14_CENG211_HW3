@@ -80,6 +80,13 @@ public class GardenerApp {
         }
     }
 
+    private void placeObject(int row, int col, GardenObject obj) {
+        garden.placeObject(row, col, obj);
+        if (obj instanceof LightSource) {
+            ((LightSource) obj).setGarden(garden);
+        }
+    }
+
     private void carryGardenObjects() {
         int objectsToCarry = 7;
         while (objectsToCarry > 0) {
@@ -220,15 +227,87 @@ public class GardenerApp {
 
     private void waitForBloomAndLight() {
         System.out.println("The gardener starts waiting. All lights are lit up. All plants start blooming.");
-        // Implement bloom and light logic
+        System.out.println("******************************************************************");
+        
+        // Trigger bloom for all plants
+        for (int i = 0; i < garden.getRows(); i++) {
+            for (int j = 0; j < garden.getColumns(); j++) {
+                GardenSquare square = garden.getSquare(i, j);
+                if (square.getGardenObject() instanceof GardenPlant) {
+                    ((GardenPlant) square.getGardenObject()).bloom(garden, i, j);
+                }
+            }
+        }
+        
+        // Trigger light for all light sources
+        for (int i = 0; i < garden.getRows(); i++) {
+            for (int j = 0; j < garden.getColumns(); j++) {
+                GardenSquare square = garden.getSquare(i, j);
+                if (square.getGardenObject() instanceof LightSource) {
+                    ((LightSource) square.getGardenObject()).lightUp();
+                }
+            }
+        }
     }
 
     private void displayFinalGarden() {
-        // Implement garden display logic
+        System.out.println("Final Garden Map:");
+        garden.displayGarden();
+        
+        // Display legend
+        System.out.println("Legend:");
+        for (int i = 0; i < garden.getRows(); i++) {
+            for (int j = 0; j < garden.getColumns(); j++) {
+                GardenSquare square = garden.getSquare(i, j);
+                if (square.getGardenObject() != null) {
+                    System.out.println("-- " + square.getGardenObject().getId() + ": " + 
+                        getObjectDescription(square.getGardenObject()));
+                }
+            }
+        }
+    }
+
+    private String getObjectDescription(GardenObject obj) {
+        if (obj instanceof GardenPlant) {
+            GardenPlant plant = (GardenPlant) obj;
+            return plant.getName() + " " + plant.getType().toString().toLowerCase();
+        } else if (obj instanceof LightSource) {
+            LightSource light = (LightSource) obj;
+            return light.getType().toString().toLowerCase().replace('_', ' ') + 
+                   " with " + light.getColor().toString().toLowerCase() + " color";
+        }
+        return "Statue";
     }
 
     private void checkGoal() {
-        // Implement goal checking logic
+        // Parse goal square location
+        int row = goalSquare.charAt(0) - 'A';
+        int col = Integer.parseInt(goalSquare.substring(1)) - 1;
+        
+        GardenSquare square = garden.getSquare(row, col);
+        PollenCloud cloud = square.getPollenCloud();
+        
+        boolean success = true;
+        if (cloud == null) {
+            success = false;
+        } else {
+            // Check if all required plant types are present
+            for (PlantType type : goalPlantTypes) {
+                if (!cloud.getPlantTypes().contains(type)) {
+                    success = false;
+                    break;
+                }
+            }
+            // Check if all required colors are present
+            for (Color color : goalColors) {
+                if (!cloud.getColors().contains(color)) {
+                    success = false;
+                    break;
+                }
+            }
+        }
+        
+        System.out.println(success ? "====>> SUCCESSFUL" : "====>> FAILED");
     }
 
     public static void main(String[] args) {
