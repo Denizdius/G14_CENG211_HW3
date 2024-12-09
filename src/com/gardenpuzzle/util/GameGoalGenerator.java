@@ -1,6 +1,8 @@
 package com.gardenpuzzle.util;
 
 import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
 import com.gardenpuzzle.model.objects.enums.PlantType;
 import com.gardenpuzzle.model.objects.enums.Color;
 
@@ -16,21 +18,25 @@ public class GameGoalGenerator {
     }
 
     public PlantType[] generatePlantTypes() {
-        int count = random.nextInt(3) + 1;
-        PlantType[] selectedTypes = new PlantType[count];
-        for (int i = 0; i < count; i++) {
-            selectedTypes[i] = plantTypes[random.nextInt(plantTypes.length)];
+        int count = random.nextInt(3) + 1; // At least one type
+        Set<PlantType> selectedTypes = new HashSet<>();
+        while (selectedTypes.size() < count) {
+            selectedTypes.add(plantTypes[random.nextInt(plantTypes.length)]);
         }
-        return selectedTypes;
+        return selectedTypes.toArray(new PlantType[0]);
     }
 
     public Color[] generateColors() {
-        int count = random.nextInt(3) + 1;
-        Color[] selectedColors = new Color[count];
-        for (int i = 0; i < count; i++) {
-            selectedColors[i] = colors[random.nextInt(colors.length)];
+        int includeColors = random.nextBoolean() ? 1 : 0; // Colors can be included or not
+        if (includeColors == 0) {
+            return new Color[0]; // No colors required
         }
-        return selectedColors;
+        int count = random.nextInt(3) + 1; // At least one color
+        Set<Color> selectedColors = new HashSet<>();
+        while (selectedColors.size() < count) {
+            selectedColors.add(colors[random.nextInt(colors.length)]);
+        }
+        return selectedColors.toArray(new Color[0]);
     }
 
     public String generateGoalSquare() {

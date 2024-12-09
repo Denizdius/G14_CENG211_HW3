@@ -17,6 +17,7 @@ import com.gardenpuzzle.model.objects.enums.Color;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Random;
 
 public class GardenerApp {
     private Garden garden;
@@ -68,15 +69,19 @@ public class GardenerApp {
         for (Color color : goalColors) {
             System.out.print(color + " ");
         }
-        System.out.println("\nTarget Square: " + goalSquare);
+        System.out.println();
     }
 
     private void placeStatues() {
-        for (int i = 1; i <= 7; i++) {
-            Statue statue = new Statue("S" + i);
-            int row = (int) (Math.random() * 6);
-            int col = (int) (Math.random() * 8);
-            garden.placeObject(row, col, statue);
+        Random rand = new Random();
+        int statuesPlaced = 0;
+        while (statuesPlaced < 7) {
+            int row = rand.nextInt(garden.getRows());
+            int col = rand.nextInt(garden.getColumns());
+            if (!garden.isBlocked(row, col)) {
+                garden.placeObject(row, col, new Statue("S" + (statuesPlaced + 1)));
+                statuesPlaced++;
+            }
         }
     }
 
@@ -194,6 +199,9 @@ public class GardenerApp {
     }
 
     private void placeGardenObjects() {
+        System.out.println("==> The gardener carries selected objects to the Garden.\n");
+        int[] targetPosition = parseGoalSquare();
+        garden.displayGarden(targetPosition[0], targetPosition[1]); // Display initial garden with target square
         while (!gardenStorage.isEmpty()) {
             System.out.println("Your chosen Garden Objects:");
             for (GardenObject obj : gardenStorage) {
@@ -225,26 +233,32 @@ public class GardenerApp {
         }
     }
 
+    private int[] parseGoalSquare() {
+        int row = goalSquare.charAt(0) - 'A';
+        int col = Integer.parseInt(goalSquare.substring(1)) - 1;
+        return new int[]{row, col};
+    }
+
     private void waitForBloomAndLight() {
         System.out.println("The gardener starts waiting. All lights are lit up. All plants start blooming.");
         System.out.println("******************************************************************");
         
-        // Trigger bloom for all plants
-        for (int i = 0; i < garden.getRows(); i++) {
-            for (int j = 0; j < garden.getColumns(); j++) {
-                GardenSquare square = garden.getSquare(i, j);
-                if (square.getGardenObject() instanceof GardenPlant) {
-                    ((GardenPlant) square.getGardenObject()).bloom(garden, i, j);
-                }
-            }
-        }
-        
-        // Trigger light for all light sources
+        // Trigger light for all light sources first to infuse colors
         for (int i = 0; i < garden.getRows(); i++) {
             for (int j = 0; j < garden.getColumns(); j++) {
                 GardenSquare square = garden.getSquare(i, j);
                 if (square.getGardenObject() instanceof LightSource) {
                     ((LightSource) square.getGardenObject()).lightUp();
+                }
+            }
+        }
+        
+        // Then trigger bloom for all plants
+        for (int i = 0; i < garden.getRows(); i++) {
+            for (int j = 0; j < garden.getColumns(); j++) {
+                GardenSquare square = garden.getSquare(i, j);
+                if (square.getGardenObject() instanceof GardenPlant) {
+                    ((GardenPlant) square.getGardenObject()).bloom(garden, i, j);
                 }
             }
         }
@@ -280,6 +294,9 @@ public class GardenerApp {
     }
 
     private void checkGoal() {
+        // Now reveal the target square
+        System.out.println("\nTarget Square: " + goalSquare);
+        
         // Parse goal square location
         int row = goalSquare.charAt(0) - 'A';
         int col = Integer.parseInt(goalSquare.substring(1)) - 1;
@@ -307,7 +324,7 @@ public class GardenerApp {
             }
         }
         
-        System.out.println(success ? "====>> SUCCESSFUL" : "====>> FAILED");
+        System.out.println(success ? "====>> SUCCESSFUL" : "====>> UNSUCCESSFUL");
     }
 
     public static void main(String[] args) {
