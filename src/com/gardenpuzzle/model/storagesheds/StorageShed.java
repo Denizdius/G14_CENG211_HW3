@@ -1,43 +1,70 @@
 package com.gardenpuzzle.model.storagesheds;
 
+import com.gardenpuzzle.model.objects.GardenObject;
+import com.gardenpuzzle.model.objects.GardenPlant;
+import com.gardenpuzzle.model.objects.LightSource;
 import java.util.ArrayList;
 import java.util.List;
-import com.gardenpuzzle.model.objects.GardenObject;
-import com.gardenpuzzle.model.objects.Statue;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class StorageShed {
-    private List<GardenObject> gardenObjects;
+    private List<GardenObject> objects;
 
     public StorageShed() {
-        gardenObjects = new ArrayList<>();
+        this.objects = new ArrayList<>();
     }
 
-    public void addGardenObject(GardenObject gardenObject) {
-        if (gardenObject == null) {
-            throw new IllegalArgumentException("Garden object cannot be null");
-        }
-        gardenObjects.add(gardenObject);
-    }
-
-    public List<GardenObject> getGardenObjects() {
-        return gardenObjects;
+    public void addGardenObject(GardenObject obj) {
+        objects.add(obj);
     }
 
     public List<GardenObject> searchGardenObjects(String criteria, String value) {
-        if (criteria == null || value == null) {
-            throw new IllegalArgumentException("Search criteria and value cannot be null");
-        }
-        
-        List<GardenObject> results = new ArrayList<>();
-        for (GardenObject obj : gardenObjects) {
-            if (!(obj instanceof com.gardenpuzzle.model.objects.interfaces.Searchable)) {
-                continue;
+        return objects.stream()
+                .filter(obj -> matchesCriteria(obj, criteria, value))
+                .collect(Collectors.toList());
+    }
+
+    private boolean matchesCriteria(GardenObject obj, String criteria, String value) {
+        if (obj instanceof GardenPlant) {
+            GardenPlant plant = (GardenPlant) obj;
+            switch (criteria) {
+                case "type": return plant.getType().toString().equalsIgnoreCase(value);
+                case "name": return plant.getName().equalsIgnoreCase(value);
+                case "id": return plant.getId().equalsIgnoreCase(value);
+                case "area": return String.valueOf(plant.getAreaOfPollenSpread()).equals(value);
+                default: return false;
             }
-            com.gardenpuzzle.model.objects.interfaces.Searchable searchable = (com.gardenpuzzle.model.objects.interfaces.Searchable) obj;
-            if (searchable.matches(criteria.toLowerCase(), value.toLowerCase())) {
-                results.add(obj);
+        } else if (obj instanceof LightSource) {
+            LightSource light = (LightSource) obj;
+            switch (criteria) {
+                case "type": return light.getType().toString().equalsIgnoreCase(value);
+                case "id": return light.getId().equalsIgnoreCase(value);
+                case "color": return light.getColor().toString().equalsIgnoreCase(value);
+                case "area": return String.valueOf(light.getAreaOfLightReach()).equals(value);
+                default: return false;
             }
         }
-        return results;
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "StorageShed{" +
+               "objects=" + objects +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StorageShed that = (StorageShed) o;
+        return Objects.equals(objects, that.objects);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(objects);
     }
 }
